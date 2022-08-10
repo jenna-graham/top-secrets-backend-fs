@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const UserService = require('../lib/services/UserService');
 
 const newUser = {
   firstName: 'Test',
@@ -9,6 +10,17 @@ const newUser = {
   email: 'test@jenna.com',
   password: '12345',
 };
+
+const registerAndLogin = async (userProps = {}) => {
+  const password = userProps.password ?? newUser.password;
+  const agent = request.agent(app);
+  const user = await UserService.create({ ...newUser, ...userProps });
+  const { email } = user;
+  await agent.post('/api/v1/users/sessions').send({ email, password });
+  console.log({ user });
+  return [agent, user];
+};
+
 describe('backend-express-template routes', () => {
   beforeEach(() => {
     return setup(pool);
@@ -50,6 +62,12 @@ describe('backend-express-template routes', () => {
         created_at: '2022-08-09T07:00:01.000Z',
       },
     ]);
+  });
+
+  it('GET /api/v1/secrets should return a list of secrets if authenticated', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent.get('/api/v1/secrets');
+    expect(res.status).toBe(200);
   });
 
   afterAll(() => {
