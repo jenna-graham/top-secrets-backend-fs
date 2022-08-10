@@ -46,13 +46,14 @@ describe('backend-express-template routes', () => {
     expect(res.status).toEqual(200);
   });
 
-  it.skip('/ should return a 401 if not authenticated', async () => {
-    const res = await request(app).get('/api/v1/users/secrets');
+  it('/ should return a 401 if not authenticated', async () => {
+    const res = await request(app).get('/api/v1/secrets');
     expect(res.status).toEqual(401);
   });
 
-  it('GET /api/v1/secrets should return a list of secrets', async () => {
-    const res = await request(app).get('/api/v1/secrets');
+  it('GET /api/v1/secrets should return a list of secrets if authenticated', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent.get('/api/v1/secrets');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([
       {
@@ -64,10 +65,10 @@ describe('backend-express-template routes', () => {
     ]);
   });
 
-  it('GET /api/v1/secrets should return a list of secrets if authenticated', async () => {
+  it('DELETE /sessions deletes the user session', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/secrets');
-    expect(res.status).toBe(200);
+    const resp = await agent.delete('/api/v1/users/sessions');
+    expect(resp.status).toBe(204);
   });
 
   afterAll(() => {
