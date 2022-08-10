@@ -54,14 +54,6 @@ describe('backend-express-template routes', () => {
     const [agent] = await registerAndLogin();
     const res = await agent.get('/api/v1/secrets');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([
-      {
-        id: '1',
-        title: 'new secret',
-        description: 'this is a new secret',
-        created_at: '2022-08-09T07:00:01.000Z',
-      },
-    ]);
   });
 
   it('DELETE /sessions deletes the user session', async () => {
