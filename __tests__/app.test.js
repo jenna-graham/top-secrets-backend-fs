@@ -34,9 +34,22 @@ describe('backend-express-template routes', () => {
     expect(res.status).toEqual(200);
   });
 
-  it('/protected should return a 401 if not authenticated', async () => {
-    const res = await request(app).get('/api/v1/users/protected');
+  it.skip('/ should return a 401 if not authenticated', async () => {
+    const res = await request(app).get('/api/v1/users/secrets');
     expect(res.status).toEqual(401);
+  });
+
+  it('GET /api/v1/secrets should return a list of secrets', async () => {
+    const res = await request(app).get('/api/v1/secrets');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([
+      {
+        id: '1',
+        title: 'new secret',
+        description: 'this is a new secret',
+        created_at: '2022-08-09T07:00:01.000Z',
+      },
+    ]);
   });
 
   afterAll(() => {
